@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, FindManyOptions, ILike } from 'typeorm';
+import { Repository, FindOptionsWhere, ILike } from 'typeorm';
 import { Task } from './entities/task.entity';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
@@ -21,29 +21,29 @@ export class TasksService {
 
   findAll(filterDto: FilterTaskDto): Promise<Task[]> {
     const { isCompleted, priority, category, dueDate, title } = filterDto;
-    const findOptions: FindManyOptions<Task> = {
-      where: {},
-      order: { dueDate: 'ASC' },
-    };
+    
+    const whereClause: FindOptionsWhere<Task> = {};
 
     if (title) {
-      findOptions.where.title = ILike(`%${title}%`);
+      whereClause.title = ILike(`%${title}%`);
     }
-
     if (isCompleted !== undefined) {
-      findOptions.where.isCompleted = isCompleted;
+      whereClause.isCompleted = isCompleted;
     }
     if (priority) {
-      findOptions.where.priority = priority;
+      whereClause.priority = priority;
     }
     if (category) {
-      findOptions.where.category = category;
+      whereClause.category = category;
     }
     if (dueDate) {
-      findOptions.where.dueDate = dueDate;
+      whereClause.dueDate = new Date(dueDate);
     }
 
-    return this.taskRepository.find(findOptions);
+    return this.taskRepository.find({
+      where: whereClause,
+      order: { dueDate: 'ASC' },
+    });
   }
 
   async findOne(id: string): Promise<Task> {
