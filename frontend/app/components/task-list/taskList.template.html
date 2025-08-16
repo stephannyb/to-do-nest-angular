@@ -1,0 +1,144 @@
+<div class="card card-body mb-4">
+    <div class="row align-items-end">
+        <div class="col-md-3">
+            <label for="filterCategory" class="form-label">Categoria</label>
+            <select id="filterCategory" class="form-select" ng-model="$ctrl.filters.category">
+                <option value="">Todas</option>
+                <option ng-repeat="cat in $ctrl.categories" value="{{cat}}">{{cat | uppercase}}</option>
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <label for="filterPriority" class="form-label">Prioridade</label>
+            <select id="filterPriority" class="form-select" ng-model="$ctrl.filters.priority">
+                <option value="">Todas</option>
+                <option ng-repeat="prio in $ctrl.priorities" value="{{prio}}">{{prio | uppercase}}</option>
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <label for="filterStatus" class="form-label">Status</label>
+            <select id="filterStatus" class="form-select" ng-model="$ctrl.filters.isCompleted">
+                <option value="">Todos</option>
+                <option value="true">Concluídos</option>
+                <option value="false">Não Concluídos</option>
+            </select>
+        </div>
+        
+        <div class="col-md-3">
+            <label for="filterDueDate" class="form-label">Data de Término</label>
+            <input type="date" class="form-control" id="filterDueDate" ng-model="$ctrl.filters.dueDate">
+        </div>
+    </div>
+    
+    <div class="row mt-3">
+        <div class="col text-end">
+            <button class="btn btn-secondary me-2" ng-click="$ctrl.clearFilters()">Limpar Filtros</button>
+            <button class="btn btn-primary" ng-click="$ctrl.loadTasks()">Aplicar Filtros</button>
+        </div>
+    </div>
+</div>
+
+
+<div class="d-flex justify-content-end mb-4">
+    </div>
+
+
+<div class="d-flex justify-content-end mb-4">
+    <button type="button" class="btn btn-primary" ng-click="$ctrl.openCreateModal()">
+        <i class="fas fa-plus me-2"></i> Nova Tarefa
+    </button>
+</div>
+
+
+<div class="row">
+
+    <div class="col-lg-3 col-md-6 mb-4" ng-repeat="category in $ctrl.categories">
+        
+        <div class="d-flex align-items-center mb-3">
+            <i class="{{ $ctrl.categoryIcons[category] }} me-2"></i>
+            <h5 class="text-capitalize mb-0">{{ category }}</h5>
+        </div>
+        
+        <div class="task-card card mb-3 task-card-clickable" 
+             ng-repeat="task in $ctrl.groupedTasks[category]"
+             ng-click="$ctrl.openEditModal(task)"
+             ng-class="[$ctrl.getPriorityClass(task.priority), { 'completed': task.isCompleted }]">
+            
+            <div class="card-body">
+                <p class="card-title fw-bold">{{ task.title }}</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <small class="text-muted">
+                        <i class="far fa-calendar-alt me-1"></i>
+                        {{ task.dueDate | date:'dd/MM/yyyy' }}
+                    </small>
+                    
+                    <div class="form-check">
+                        <input class="form-check-input" 
+                               type="checkbox" 
+                               ng-model="task.isCompleted"
+                               ng-change="$ctrl.toggleComplete(task)"
+                               ng-click="$event.stopPropagation()">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</div>
+
+
+<div class="modal fade" id="createTaskModal" tabindex="-1" aria-labelledby="createTaskModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createTaskModalLabel">{{ $ctrl.modalTitle }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form name="taskForm">
+                    <div class="mb-3">
+                        <label for="taskTitle" class="form-label">Título</label>
+                        <input type="text" class="form-control" id="taskTitle" ng-model="$ctrl.taskInModal.title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="taskDescription" class="form-label">Descrição</label>
+                        <textarea class="form-control" id="taskDescription" rows="3" ng-model="$ctrl.taskInModal.description"></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="taskCategory" class="form-label">Categoria</label>
+                            <select class="form-select" id="taskCategory" ng-model="$ctrl.taskInModal.category">
+                                <option value="" disabled>Selecione...</option>
+                                <option ng-repeat="cat in $ctrl.categories" value="{{cat}}">{{cat | uppercase}}</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="taskPriority" class="form-label">Prioridade</label>
+                            <select class="form-select" id="taskPriority" ng-model="$ctrl.taskInModal.priority">
+                                <option value="" disabled>Selecione...</option>
+                                <option ng-repeat="prio in $ctrl.priorities" value="{{prio}}">{{prio | uppercase}}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="taskDueDate" class="form-label">Data de Vencimento</label>
+                        <input type="date" class="form-control" id="taskDueDate" ng-model="$ctrl.taskInModal.dueDate">
+                    </div>
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" ng-if="!$ctrl.taskInModal.id">Fechar</button>
+
+                <button type="button" class="btn btn-danger me-auto" ng-if="$ctrl.taskInModal.id" ng-click="$ctrl.deleteTask()" data-bs-dismiss="modal">
+                    <i class="fas fa-trash-alt me-1"></i> Apagar
+                </button>
+
+                <button type="button" class="btn btn-primary" ng-click="$ctrl.submitTaskForm()" data-bs-dismiss="modal">
+                    {{ $ctrl.modalButtonText }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
