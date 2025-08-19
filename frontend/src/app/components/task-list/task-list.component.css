@@ -1,0 +1,34 @@
+/* Estilo base para os cards de tarefa */
+.task-card {
+    transition: all 0.2s ease-in-out;
+    min-height: 80px; /* Garante uma altura mínima para os cards vazios */
+}
+
+.task-card-clickable:hover {
+    cursor: pointer;
+    background-color: #f8f9fa;
+    transform: translateY(-2px);
+}
+
+/* Cores de prioridade (usando a borda esquerda) */
+.task-card-low { border-left: 5px solid #0d6efd; }       /* Azul */
+.task-card-normal { border-left: 5px solid #198754; }   /* Verde */
+.task-card-high { border-left: 5px solid #ffc107; }     /* Laranja */
+.task-card-critical { border-left: 5px solid #dc3545; } /* Vermelho */
+
+/* Estilo para tarefas concluídas */
+.task-card.completed {
+    opacity: 0.65;
+}
+
+/* Aplica o 'line-through' APENAS no título da tarefa concluída */
+.task-card.completed .card-title {
+    text-decoration: line-through;
+    font-weight: normal !important;
+}
+
+/* Ícones do cabeçalho das colunas */
+.d-flex i {
+    font-size: 1.2rem;
+    color: #6c757d;
+}

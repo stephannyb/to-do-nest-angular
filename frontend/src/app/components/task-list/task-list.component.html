@@ -1,0 +1,125 @@
+<div class="container mt-4">
+    <div class="card card-body mb-4 filter-panel">
+
+        <div class="row align-items-end">
+            <div class="col-md"> <label for="filterCategory" class="form-label">Categoria</label>
+                <select id="filterCategory" class="form-select" [(ngModel)]="filters.category">
+                    <option value="">Todas</option>
+                    <option *ngFor="let cat of categories" [value]="cat">{{cat | uppercase}}</option>
+                </select>
+            </div>
+            <div class="col-md"> <label for="filterPriority" class="form-label">Prioridade</label>
+                <select id="filterPriority" class="form-select" [(ngModel)]="filters.priority">
+                    <option value="">Todas</option>
+                    <option *ngFor="let prio of priorities" [value]="prio">{{prio | uppercase}}</option>
+                </select>
+            </div>
+            <div class="col-md"> <label for="filterStatus" class="form-label">Status</label>
+                <select id="filterStatus" class="form-select" [(ngModel)]="filters.isCompleted">
+                    <option value="">Todos</option>
+                    <option [ngValue]="true">Concluídos</option>
+                    <option [ngValue]="false">Não Concluídos</option>
+                </select>
+            </div>
+            <div class="col-md"> <label for="filterDueDate" class="form-label">Data de Término</label>
+                <input type="date" class="form-control" id="filterDueDate" [(ngModel)]="filters.dueDate">
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col text-end">
+                <button class="btn btn-secondary me-2" (click)="clearFilters()">Limpar Filtros</button>
+                <button class="btn btn-primary" (click)="loadTasks()">Aplicar Filtros</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-end mb-4">
+        <button type="button" class="btn btn-primary" (click)="openCreateModal()">
+            <i class="fas fa-plus me-2"></i> Nova Tarefa
+        </button>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-3 col-md-6 mb-4" *ngFor="let category of categories">
+            <div class="d-flex align-items-center mb-3">
+                <i class="{{ categoryIcons[category] }} me-2"></i>
+                <h5 class="text-capitalize mb-0">{{ category }}</h5>
+            </div>
+
+            <div *ngFor="let task of groupedTasks[category]"
+                 [class]="getCardClasses(task)"
+                 (click)="openEditModal(task)">
+                
+                <div class="card-body">
+                    <p class="card-title fw-bold">{{ task.title }}</p>
+                    <div class="d-flex justify-content-between align-items-center mt-auto">
+                        <small class="text-muted" *ngIf="task.dueDate">
+                            <i class="far fa-calendar-alt me-1"></i>
+                            {{ task.dueDate | date:'dd/MM/yyyy' }}
+                        </small>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox"
+                                   [ngModel]="task.isCompleted"
+                                   (ngModelChange)="toggleComplete(task)"
+                                   (click)="$event.stopPropagation()">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="createTaskModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ modalTitle }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form name="taskForm" #form="ngForm">
+                    <div class="mb-3">
+                        <label class="form-label">Título</label>
+                        <input name="title" type="text" class="form-control" [(ngModel)]="taskInModal.title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Descrição</label>
+                        <textarea name="description" class="form-control" rows="3" [(ngModel)]="taskInModal.description"></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Categoria</label>
+                            <select name="category" class="form-select" [(ngModel)]="taskInModal.category">
+                                <option [ngValue]="undefined" disabled>Selecione...</option>
+                                <option *ngFor="let cat of categories" [value]="cat">{{cat | uppercase}}</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Prioridade</label>
+                            <select name="priority" class="form-select" [(ngModel)]="taskInModal.priority">
+                                <option [ngValue]="undefined" disabled>Selecione...</option>
+                                <option *ngFor="let prio of priorities" [value]="prio">{{prio | uppercase}}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Data de Vencimento</label>
+                        <input name="dueDate" type="date" class="form-control" [(ngModel)]="taskInModal.dueDate">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" *ngIf="!taskInModal.id">Fechar</button>
+                <button type="button" class="btn btn-danger me-auto" *ngIf="taskInModal.id" (click)="deleteTask()">
+                    <i class="fas fa-trash-alt me-1"></i> Apagar
+                </button>
+                <button type="button" class="btn btn-primary" (click)="submitTaskForm()" [disabled]="form.invalid">
+                    {{ modalButtonText }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
