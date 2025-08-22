@@ -6,7 +6,7 @@
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 
-## 📝 Descriçãogit clone [https://github.com/stephannyb/to-do-nest-angular](https://github.com/stephannyb/to-do-nest-angular)
+## 📝 Descrição
 
 Este projeto é uma aplicação **full-stack** de gerenciamento de tarefas (To-Do List) desenvolvida como um teste prático para uma vaga de desenvolvedor. A aplicação conta com um backend robusto construído em **NestJS** e um frontend dinâmico em **Angular (v17+)**, com todo o ambiente conteinerizado com **Docker**.
 
